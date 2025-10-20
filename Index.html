@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioExplorer - Aprenda Biologia de Forma Interativa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #60ad5e;
+            --primary-dark: #005005;
+            --secondary: #ff6f00;
+            --accent: #2196f3;
+            --text: #212121;
+            --text-light: #757575;
+            --background: #f5f5f5;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .floating-cells {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        
+        .cell {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+        
+        nav {
+            background-color: var(--primary-dark);
+            padding: 0.75rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+        
+        nav li {
+            margin: 0 0.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        section {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        h2 {
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        h2 i {
+            color: var(--secondary);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+        }
+        
+        .interactive-area {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .icon-item {
+            font-size: 3rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .icon-item:hover {
+            transform: scale(1.2);
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .nucleus-icon {
+            color: #d32f2f;
+        }
+        
+        .mitochondria-icon {
+            color: #ffa000;
+        }
+        
+        .ribosome-icon {
+            color: #1976d2;
+        }
+        
+        .golgi-icon {
+            color: #7b1fa2;
+        }
+        
+        .er-icon {
+            color: #388e3c;
+        }
+        
+        .mouth-icon {
+            color: #e91e63;
+        }
+        
+        .esophagus-icon {
+            color: #9c27b0;
+        }
+        
+        .stomach-icon {
+            color: #673ab7;
+        }
+        
+        .intestine-icon {
+            color: #3f51b5;
+        }
+        
+        .colon-icon {
+            color: #2196f3;
+        }
+        
+        .icon-item .tooltiptext {
+            visibility: hidden;
+            width: 180px;
+            background-color: var(--text);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        
+        .icon-item:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .info-panel {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dna-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .dna-strand {
+            display: flex;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .nucleotide {
+            width: 50px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .nucleotide:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+        
+        .a { background-color: #f44336; }
+        .t { background-color: #2196f3; }
+        .c { background-color: #4caf50; }
+        .g { background-color: #ff9800; }
+        .u { background-color: #9c27b0; }
+        
+        .quiz-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .question {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .option {
+            padding: 1rem;
+            background-color: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .option.correct {
+            background-color: #e8f5e9;
+            border-color: #4caf50;
+        }
+        
+        .option.incorrect {
+            background-color: #ffebee;
+            border-color: #f44336;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e65100;
+        }
+        
+        .result {
+            margin-top: 1rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .digestion-animation {
+            height: 120px;
+            background: linear-gradient(to right, #ffccbc, #ffab91, #ff8a65, #ff7043, #f4511e);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            overflow: hidden;
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .food-particle {
+            width: 40px;
+            height: 40px;
+            background-color: #5d4037;
+            border-radius: 50%;
+            position: absolute;
+            left: 10px;
+            transition: left 4s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .floating-bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .bubble {
+            position: absolute;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            animation: bubble-float 8s infinite ease-in-out;
+        }
+        
+        @keyframes bubble-float {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        }
+        
+        footer {
+            background-color: var(--primary-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--text);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tab-container {
+            margin: 1.5rem 0;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .search-box {
+            margin: 1rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .icon-container {
+                gap: 1.5rem;
+            }
+            
+            .icon-item {
+                font-size: 2.5rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 0.25rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="floating-cells" id="floating-cells"></div>
+        <h1><i class="fas fa-microscope"></i> BioExplorer</h1>
+        <p>Descubra os segredos da vida através da interatividade</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#introducao" class="active"><i class="fas fa-home"></i> Introdução</a></li>
+            <li><a href="#celula"><i class="fas fa-circle"></i> Célula Animal</a></li>
+            <li><a href="#digestivo"><i class="fas fa-stomach"></i> Sistema Digestório</a></li>
+            <li><a href="#dna"><i class="fas fa-dna"></i> DNA e Genética</a></li>
+            <li><a href="#quiz"><i class="fas fa-question-circle"></i> Quiz</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="introducao" class="visible">
+            <h2><i class="fas fa-seedling"></i> Introdução à Biologia</h2>
+            <p>A Biologia é a ciência que estuda a vida e os organismos vivos, incluindo sua estrutura, função, crescimento, origem, evolução e distribuição. É uma área fascinante que nos ajuda a compreender desde as menores partículas que compõem os seres vivos até os complexos ecossistemas do nosso planeta.</p>
+            
+            <div class="interactive-area">
+                <h3>Árvore da Vida Interativa</h3>
+                <p>Clique nos diferentes reinos para aprender mais sobre eles:</p>
+                
+                <div class="search-box">
+                    <input type="text" id="search-kingdom" placeholder="Pesquisar reino...">
+                    <button class="btn" onclick="searchKingdom()"><i class="fas fa-search"></i> Buscar</button>
+                </div>
+                
+                <div class="icon-container">
+                    <div class="icon-item tooltip" style="color: #4caf50;" onclick="showKingdomInfo('animalia')">
+                        <i class="fas fa-paw"></i>
+                        <span class="tooltiptext">Animalia - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" style="color: #388e3c;" onclick="showKingdomInfo('plantae')">
+                        <i class="fas fa-leaf"></i>
+                        <span class="tooltiptext">Plantae - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" style="color: #ffa000;" onclick="showKingdomInfo('fungi')">
+                        <i class="fas fa-fan"></i>
+                        <span class="tooltiptext">Fungi - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" style="color: #2196f3;" onclick="showKingdomInfo('protista')">
+                        <i class="fas fa-water"></i>
+                        <span class="tooltiptext">Protista - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" style="color: #795548;" onclick="showKingdomInfo('monera')">
+                        <i class="fas fa-bacteria"></i>
+                        <span class="tooltiptext">Monera - Clique para mais informações</span>
+                    </div>
+                </div>
+                
+                <div id="kingdom-info" class="info-panel"></div>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" onclick="openTab(event, 'tab1')">História da Biologia</div>
+                    <div class="tab" onclick="openTab(event, 'tab2')">Ramos da Biologia</div>
+                    <div class="tab" onclick="openTab(event, 'tab3')">Método Científico</div>
+                </div>
+                
+                <div id="tab1" class="tab-content active">
+                    <p>A biologia tem suas raízes na medicina e na história natural, remontando a Galeno e Aristóteles na Grécia Antiga. Durante o Renascimento e Iluminismo, o pensamento biológico foi revolucionado por meio de trabalhos como os de Andreas Vesalius e William Harvey.</p>
+                </div>
+                
+                <div id="tab2" class="tab-content">
+                    <p>A biologia moderna é composta por diversos ramos e subdisciplinas, incluindo:</p>
+                    <ul>
+                        <li>Anatomia</li>
+                        <li>Bioquímica</li>
+                        <li>Biologia celular</li>
+                        <li>Ecologia</li>
+                        <li>Genética</li>
+                        <li>Fisiologia</li>
+                        <li>Zoologia</li>
+                    </ul>
+                </div>
+                
+                <div id="tab3" class="tab-content">
+                    <p>O método científico é aplicado em biologia através da observação, formulação de hipóteses, experimentação, análise de resultados e conclusões. Este processo permite que os biólogos desenvolvam teorias sobre como os sistemas vivos funcionam.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="celula">
+            <h2><i class="fas fa-border-all"></i> Célula Animal Interativa</h2>
+            <p>A célula animal é a unidade básica da vida nos animais. É uma célula eucariótica, o que significa que possui um núcleo verdadeiro e organelas membranosas. Explore as diferentes partes da célula clicando nos ícones:</p>
+            
+            <div class="interactive-area">
+                <div class="icon-container">
+                    <div class="icon-item tooltip" onclick="showOrganelleInfo('nucleus')">
+                        <i class="fas fa-circle nucleus-icon"></i>
+                        <span class="tooltiptext">Núcleo - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganelleInfo('mitochondria')">
+                        <i class="fas fa-bolt mitochondria-icon"></i>
+                        <span class="tooltiptext">Mitocôndria - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganelleInfo('ribosome')">
+                        <i class="fas fa-circle-notch ribosome-icon"></i>
+                        <span class="tooltiptext">Ribossomo - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganelleInfo('golgi')">
+                        <i class="fas fa-layer-group golgi-icon"></i>
+                        <span class="tooltiptext">Complexo de Golgi - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganelleInfo('er')">
+                        <i class="fas fa-network-wired er-icon"></i>
+                        <span class="tooltiptext">Retículo Endoplasmático - Clique para mais informações</span>
+                    </div>
+                </div>
+                <div id="organelle-info" class="info-panel"></div>
+            </div>
+        </section>
+        
+        <section id="digestivo">
+            <h2><i class="fas fa-utensils"></i> Sistema Digestório</h2>
+            <p>O sistema digestório é responsável por processar os alimentos que ingerimos, extraindo nutrientes e eliminando resíduos. Clique em cada ícone para aprender sobre sua função no processo digestivo:</p>
+            
+            <div class="interactive-area">
+                <div class="icon-container">
+                    <div class="icon-item tooltip" onclick="showOrganInfo('boca')">
+                        <i class="fas fa-teeth mouth-icon"></i>
+                        <span class="tooltiptext">Boca - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganInfo('esofago')">
+                        <i class="fas fa-long-arrow-alt-down esophagus-icon"></i>
+                        <span class="tooltiptext">Esôfago - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganInfo('estomago')">
+                        <i class="fas fa-blender stomach-icon"></i>
+                        <span class="tooltiptext">Estômago - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganInfo('intestino-delgado')">
+                        <i class="fas fa-sync-alt intestine-icon"></i>
+                        <span class="tooltiptext">Intestino Delgado - Clique para mais informações</span>
+                    </div>
+                    <div class="icon-item tooltip" onclick="showOrganInfo('intestino-grosso')">
+                        <i class="fas fa-arrows-alt-h colon-icon"></i>
+                        <span class="tooltiptext">Intestino Grosso - Clique para mais informações</span>
+                    </div>
+                </div>
+                <div id="organ-info" class="info-panel"></div>
+                
+                <div style="margin-top: 2rem;">
+                    <h3>Simulação do Processo Digestivo</h3>
+                    <p>Clique no botão abaixo para ver uma simulação simplificada do processo digestivo:</p>
+                    <button class="btn" onclick="startDigestion()"><i class="fas fa-play"></i> Iniciar Digestão</button>
+                    
+                    <div class="digestion-animation">
+                        <div class="floating-bubbles" id="digestion-bubbles"></div>
+                        <div id="food-particle" class="food-particle">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <span>Processo Digestivo</span>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div id="digestion-progress" class="progress"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="dna">
+            <h2><i class="fas fa-dna"></i> DNA e Genética</h2>
+            <p>O DNA (ácido desoxirribonucleico) é a molécula que carrega a informação genética em todos os seres vivos. É composto por quatro bases nitrogenadas: Adenina (A), Timina (T), Citosina (C) e Guanina (G).</p>
+            
+            <div class="interactive-area">
+                <div class="dna-container">
+                    <h3>Estrutura do DNA</h3>
+                    <p>Clique no botão para gerar uma sequência aleatória de DNA:</p>
+                    <button class="btn" onclick="generateDNA()"><i class="fas fa-dna"></i> Gerar DNA</button>
+                    
+                    <div id="dna-strand" class="dna-strand"></div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <h3>Transcrição do DNA para RNA</h3>
+                        <p>O RNA mensageiro (mRNA) é produzido a partir do DNA em um processo chamado transcrição. No RNA, a Timina (T) é substituída por Uracila (U).</p>
+                        <button class="btn btn-secondary" onclick="transcribeDNA()"><i class="fas fa-exchange-alt"></i> Transcrever DNA para RNA</button>
+                        <div id="rna-strand" class="dna-strand" style="margin-top: 1rem;"></div>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <h3>Código Genético</h3>
+                        <p>Clique em uma base nitrogenada para aprender mais sobre ela:</p>
+                        <div class="dna-strand">
+                            <div class="nucleotide a tooltip" onclick="showBaseInfo('Adenina')">
+                                A
+                                <span class="tooltiptext">Clique para mais informações</span>
+                            </div>
+                            <div class="nucleotide t tooltip" onclick="showBaseInfo('Timina')">
+                                T
+                                <span class="tooltiptext">Clique para mais informações</span>
+                            </div>
+                            <div class="nucleotide c tooltip" onclick="showBaseInfo('Citosina')">
+                                C
+                                <span class="tooltiptext">Clique para mais informações</span>
+                            </div>
+                            <div class="nucleotide g tooltip" onclick="showBaseInfo('Guanina')">
+                                G
+                                <span class="tooltiptext">Clique para mais informações</span>
+                            </div>
+                            <div class="nucleotide u tooltip" onclick="showBaseInfo('Uracila')">
+                                U
+                                <span class="tooltiptext">Clique para mais informações</span>
+                            </div>
+                        </div>
+                        <div id="base-info" class="info-panel"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="quiz">
+            <h2><i class="fas fa-brain"></i> Quiz de Biologia</h2>
+            <p>Teste seus conhecimentos em biologia respondendo às perguntas abaixo:</p>
+            
+            <div class="interactive-area quiz-container">
+                <div class="progress-bar">
+                    <div id="quiz-progress" class="progress"></div>
+                </div>
+                
+                <div class="question">
+                    <h3>Pergunta 1: Qual organela é conhecida como a "usina de energia" da célula?</h3>
+                    <div class="options">
+                        <div class="option" onclick="checkAnswer(this, 'correct')">
+                            <i class="fas fa-bolt"></i>
+                            Mitocôndria
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-circle"></i>
+                            Núcleo
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-circle-notch"></i>
+                            Ribossomo
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-layer-group"></i>
+                            Complexo de Golgi
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>Pergunta 2: Qual das seguintes bases nitrogenadas não é encontrada no DNA?</h3>
+                    <div class="options">
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-dna a"></i>
+                            Adenina
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-dna t"></i>
+                            Timina
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'correct')">
+                            <i class="fas fa-dna u"></i>
+                            Uracila
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-dna g"></i>
+                            Guanina
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <h3>Pergunta 3: Onde ocorre a maior parte da absorção de nutrientes no sistema digestório?</h3>
+                    <div class="options">
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-blender"></i>
+                            Estômago
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'correct')">
+                            <i class="fas fa-sync-alt"></i>
+                            Intestino Delgado
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-arrows-alt-h"></i>
+                            Intestino Grosso
+                        </div>
+                        <div class="option" onclick="checkAnswer(this, 'incorrect')">
+                            <i class="fas fa-long-arrow-alt-down"></i>
+                            Esôfago
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result" id="quiz-result"></div>
+                <button class="btn" onclick="resetQuiz()" style="margin-top: 1rem; display: none;" id="reset-btn">
+                    <i class="fas fa-redo"></i> Reiniciar Quiz
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>BioExplorer - Website Educativo de Biologia</p>
+        <p>Desenvolvido para fins educacionais | <i class="fas fa-heart"></i></p>
+    </footer>
+
+    <script>
+        // Inicializar elementos flutuantes
+        function initFloatingElements() {
+            const floatingCells = document.getElementById('floating-cells');
+            const digestionBubbles = document.getElementById('digestion-bubbles');
+            
+            // Criar células flutuantes
+            for (let i = 0; i < 15; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.style.width = `${Math.random() * 60 + 20}px`;
+                cell.style.height = cell.style.width;
+                cell.style.left = `${Math.random() * 100}%`;
+                cell.style.top = `${Math.random() * 100}%`;
+                cell.style.background = `rgba(255,255,255,${Math.random() * 0.2 + 0.1})`;
+                cell.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                floatingCells.appendChild(cell);
+            }
+            
+            // Criar bolhas para animação digestiva
+            for (let i = 0; i < 10; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                bubble.style.width = `${Math.random() * 20 + 5}px`;
+                bubble.style.height = bubble.style.width;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.bottom = '0';
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                digestionBubbles.appendChild(bubble);
+            }
+        }
+        
+        // Funções para a seção de Introdução
+        function showKingdomInfo(kingdom) {
+            const infoPanel = document.getElementById('kingdom-info');
+            let info = '';
+            
+            switch(kingdom) {
+                case 'animalia':
+                    info = `
+                        <h3><i class="fas fa-paw"></i> Animalia</h3>
+                        <p>Organismos multicelulares, eucariontes e heterotróficos. Incluem desde esponjas até mamíferos.</p>
+                        <p><strong>Características:</strong> Movimento, sistema nervoso, reprodução sexuada.</p>
+                        <p><strong>Exemplos:</strong> Humanos, insetos, peixes, aves.</p>
+                    `;
+                    break;
+                case 'plantae':
+                    info = `
+                        <h3><i class="fas fa-leaf"></i> Plantae</h3>
+                        <p>Organismos multicelulares, eucariontes e autotróficos (fotossíntese). Incluem árvores, flores, musgos, etc.</p>
+                        <p><strong>Características:</strong> Parede celular de celulose, cloroplastos, imobilidade.</p>
+                        <p><strong>Exemplos:</strong> Árvores, samambaias, algas verdes.</p>
+                    `;
+                    break;
+                case 'fungi':
+                    info = `
+                        <h3><i class="fas fa-fan"></i> Fungi</h3>
+                        <p>Organismos eucariontes, heterotróficos que incluem cogumelos, leveduras e bolores.</p>
+                        <p><strong>Características:</strong> Parede celular de quitina, digestão externa.</p>
+                        <p><strong>Exemplos:</strong> Cogumelos, leveduras, orelhas-de-pau.</p>
+                    `;
+                    break;
+                case 'protista':
+                    info = `
+                        <h3><i class="fas fa-water"></i> Protista</h3>
+                        <p>Grupo diverso de organismos eucariontes, geralmente unicelulares. Incluem algas e protozoários.</p>
+                        <p><strong>Características:</strong> Diversidade morfológica e de habitats.</p>
+                        <p><strong>Exemplos:</strong> Amebas, paramécios, algas diatomáceas.</p>
+                    `;
+                    break;
+                case 'monera':
+                    info = `
+                        <h3><i class="fas fa-bacteria"></i> Monera</h3>
+                        <p>Organismos procariontes (sem núcleo definido). Incluem bactérias e cianobactérias.</p>
+                        <p><strong>Características:</strong> Células simples, sem organelas membranosas.</p>
+                        <p><strong>Exemplos:</strong> Escherichia coli, Streptococcus, cianobactérias.</p>
+                    `;
+                    break;
+            }
+            
+            infoPanel.innerHTML = info;
+            infoPanel.style.display = 'block';
+        }
+        
+        function searchKingdom() {
+            const searchTerm = document.getElementById('search-kingdom').value.toLowerCase();
+            const kingdoms = ['animalia', 'plantae', 'fungi', 'protista', 'monera'];
+            
+            if (kingdoms.includes(searchTerm)) {
+                showKingdomInfo(searchTerm);
+            } else {
+                alert('Reino não encontrado. Tente: animalia, plantae, fungi, protista ou monera.');
+            }
+        }
+        
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            
+            const tablinks = document.getElementsByClassName("tab");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+        
+        // Funções para a seção da Célula Animal
+        function showOrganelleInfo(organelle) {
+            const infoPanel = document.getElementById('organelle-info');
+            let info = '';
+            
+            switch(organelle) {
+                case 'nucleus':
+                    info = `
+                        <h3><i class="fas fa-circle"></i> Núcleo</h3>
+                        <p>O núcleo é a organela que contém o material genético (DNA) da célula. Ele controla todas as atividades celulares e é responsável pela divisão celular.</p>
+                        <p><strong>Função:</strong> Armazenar e proteger o DNA, controlar as atividades celulares.</p>
+                        <p><strong>Estrutura:</strong> Envoltório nuclear, cromatina, nucléolo.</p>
+                    `;
+                    break;
+                case 'mitochondria':
+                    info = `
+                        <h3><i class="fas fa-bolt"></i> Mitocôndria</h3>
+                        <p>As mitocôndrias são conhecidas como as "usinas de energia" da célula. Elas produzem ATP (adenosina trifosfato) através da respiração celular.</p>
+                        <p><strong>Função:</strong> Produção de energia (ATP) através da respiração celular.</p>
+                        <p><strong>Estrutura:</strong> Membrana dupla, cristas, matriz.</p>
+                    `;
+                    break;
+                case 'ribosome':
+                    info = `
+                        <h3><i class="fas fa-circle-notch"></i> Ribossomo</h3>
+                        <p>Os ribossomos são responsáveis pela síntese de proteínas. Eles podem estar livres no citoplasma ou associados ao retículo endoplasmático rugoso.</p>
+                        <p><strong>Função:</strong> Síntese de proteínas a partir do RNA mensageiro.</p>
+                        <p><strong>Estrutura:</strong> Duas subunidades (maior e menor) compostas de RNA e proteínas.</p>
+                    `;
+                    break;
+                case 'golgi':
+                    info = `
+                        <h3><i class="fas fa-layer-group"></i> Complexo de Golgi</h3>
+                        <p>O complexo de Golgi modifica, armazena e distribui proteínas e lipídios produzidos pelo retículo endoplasmático.</p>
+                        <p><strong>Função:</strong> Modificação, empacotamento e distribuição de proteínas e lipídios.</p>
+                        <p><strong>Estrutura:</strong> Conjunto de cisternas achatadas e vesículas.</p>
+                    `;
+                    break;
+                case 'er':
+                    info = `
+                        <h3><i class="fas fa-network-wired"></i> Retículo Endoplasmático</h3>
+                        <p>O retículo endoplasmático é uma rede de membranas envolvida na síntese de proteínas (rugoso) e lipídios (liso), além do transporte de substâncias dentro da célula.</p>
+                        <p><strong>Função:</strong> Síntese de proteínas (RER) e lipídios (REL), transporte intracelular.</p>
+                        <p><strong>Estrutura:</strong> Rede de túbulos e cisternas interconectadas.</p>
+                    `;
+                    break;
+            }
+            
+            infoPanel.innerHTML = info;
+            infoPanel.style.display = 'block';
+        }
+        
+        // Funções para a seção do Sistema Digestório
+        function showOrganInfo(organ) {
+            const infoPanel = document.getElementById('organ-info');
+            let info = '';
+            
+            switch(organ) {
+                case 'boca':
+                    info = `
+                        <h3><i class="fas fa-teeth"></i> Boca</h3>
+                        <p>A digestão começa na boca, onde os alimentos são mastigados e misturados com a saliva, que contém enzimas digestivas como a amilase salivar.</p>
+                        <p><strong>Função:</strong> Mastigação, insalivação e início da digestão de carboidratos.</p>
+                        <p><strong>Enzimas:</strong> Amilase salivar.</p>
+                    `;
+                    break;
+                case 'esofago':
+                    info = `
+                        <h3><i class="fas fa-long-arrow-alt-down"></i> Esôfago</h3>
+                        <p>O esôfago é um tubo muscular que transporta o alimento da boca para o estômago através de movimentos peristálticos.</p>
+                        <p><strong>Função:</strong> Transporte do bolo alimentar da boca ao estômago.</p>
+                        <p><strong>Característica:</strong> Movimentos peristálticos.</p>
+                    `;
+                    break;
+                case 'estomago':
+                    info = `
+                        <h3><i class="fas fa-blender"></i> Estômago</h3>
+                        <p>No estômago, os alimentos são misturados com suco gástrico, que contém ácido clorídrico e enzimas como a pepsina, iniciando a digestão de proteínas.</p>
+                        <p><strong>Função:</strong> Armazenamento, mistura e digestão parcial de proteínas.</p>
+                        <p><strong>Enzimas:</strong> Pepsina, lipase gástrica.</p>
+                    `;
+                    break;
+                case 'intestino-delgado':
+                    info = `
+                        <h3><i class="fas fa-sync-alt"></i> Intestino Delgado</h3>
+                        <p>No intestino delgado ocorre a maior parte da digestão e absorção de nutrientes. É dividido em duodeno, jejuno e íleo.</p>
+                        <p><strong>Função:</strong> Digestão completa e absorção de nutrientes.</p>
+                        <p><strong>Enzimas:</strong> Amilase, tripsina, lipase, maltase, lactase, sacarase.</p>
+                    `;
+                    break;
+                case 'intestino-grosso':
+                    info = `
+                        <h3><i class="fas fa-arrows-alt-h"></i> Intestino Grosso</h3>
+                        <p>O intestino grosso absorve água e eletrólitos, formando as fezes. É composto pelo ceco, cólon e reto.</p>
+                        <p><strong>Função:</strong> Absorção de água, formação e armazenamento de fezes.</p>
+                        <p><strong>Partes:</strong> Ceco, cólon ascendente, cólon transverso, cólon descendente, cólon sigmoide, reto.</p>
+                    `;
+                    break;
+            }
+            
+            infoPanel.innerHTML = info;
+            infoPanel.style.display = 'block';
+        }
+        
+        function startDigestion() {
+            const foodParticle = document.getElementById('food-particle');
+            const progressBar = document.getElementById('digestion-progress');
+            
+            // Resetar posição
+            foodParticle.style.left = '10px';
+            progressBar.style.width = '0%';
+            
+            // Iniciar animação
+            setTimeout(() => {
+                foodParticle.style.left = 'calc(100% - 50px)';
+                progressBar.style.width = '100%';
+            }, 100);
+        }
+        
+        // Funções para a seção de DNA
+        function generateDNA() {
+            const dnaStrand = document.getElementById('dna-strand');
+            dnaStrand.innerHTML = '';
+            
+            const bases = ['A', 'T', 'C', 'G'];
+            for (let i = 0; i < 12; i++) {
+                const randomBase = bases[Math.floor(Math.random() * bases.length)];
+                const nucleotide = document.createElement('div');
+                nucleotide.className = `nucleotide ${randomBase.toLowerCase()}`;
+                nucleotide.textContent = randomBase;
+                nucleotide.onclick = function() { showBaseInfo(randomBase === 'A' ? 'Adenina' : randomBase === 'T' ? 'Timina' : randomBase === 'C' ? 'Citosina' : 'Guanina'); };
+                dnaStrand.appendChild(nucleotide);
+            }
+        }
+        
+        function transcribeDNA() {
+            const dnaStrand = document.getElementById('dna-strand');
+            const rnaStrand = document.getElementById('rna-strand');
+            rnaStrand.innerHTML = '';
+            
+            if (dnaStrand.children.length === 0) {
+                alert('Primeiro gere uma sequência de DNA!');
+                return;
+            }
+            
+            for (let i = 0; i < dnaStrand.children.length; i++) {
+                const dnaBase = dnaStrand.children[i].textContent;
+                let rnaBase = dnaBase;
+                
+                // Na transcrição, a Timina (T) é substituída por Uracila (U)
+                if (dnaBase === 'T') {
+                    rnaBase = 'U';
+                }
+                
+                const nucleotide = document.createElement('div');
+                nucleotide.className = `nucleotide ${rnaBase.toLowerCase()}`;
+                nucleotide.textContent = rnaBase;
+                nucleotide.onclick = function() { showBaseInfo(rnaBase === 'A' ? 'Adenina' : rnaBase === 'U' ? 'Uracila' : rnaBase === 'C' ? 'Citosina' : 'Guanina'); };
+                rnaStrand.appendChild(nucleotide);
+            }
+        }
+        
+        function showBaseInfo(base) {
+            const infoPanel = document.getElementById('base-info');
+            let info = '';
+            
+            switch(base) {
+                case 'Adenina':
+                    info = `
+                        <h3><i class="fas fa-dna a"></i> Adenina (A)</h3>
+                        <p>Adenina é uma purina que se emparelha com a Timina no DNA (com duas ligações de hidrogênio) e com a Uracila no RNA.</p>
+                        <p><strong>Tipo:</strong> Purina</p>
+                        <p><strong>Pareamento:</strong> T (DNA) ou U (RNA)</p>
+                    `;
+                    break;
+                case 'Timina':
+                    info = `
+                        <h3><i class="fas fa-dna t"></i> Timina (T)</h3>
+                        <p>Timina é uma pirimidina encontrada apenas no DNA, onde se emparelha com a Adenina.</p>
+                        <p><strong>Tipo:</strong> Pirimidina</p>
+                        <p><strong>Pareamento:</strong> A (DNA)</p>
+                    `;
+                    break;
+                case 'Citosina':
+                    info = `
+                        <h3><i class="fas fa-dna c"></i> Citosina (C)</h3>
+                        <p>Citosina é uma pirimidina que se emparelha com a Guanina no DNA e RNA (com três ligações de hidrogênio).</p>
+                        <p><strong>Tipo:</strong> Pirimidina</p>
+                        <p><strong>Pareamento:</strong> G (DNA e RNA)</p>
+                    `;
+                    break;
+                case 'Guanina':
+                    info = `
+                        <h3><i class="fas fa-dna g"></i> Guanina (G)</h3>
+                        <p>Guanina é uma purina que se emparelha com a Citosina no DNA e RNA.</p>
+                        <p><strong>Tipo:</strong> Purina</p>
+                        <p><strong>Pareamento:</strong> C (DNA e RNA)</p>
+                    `;
+                    break;
+                case 'Uracila':
+                    info = `
+                        <h3><i class="fas fa-dna u"></i> Uracila (U)</h3>
+                        <p>Uracila é uma pirimidina encontrada apenas no RNA, onde substitui a Timina e se emparelha com a Adenina.</p>
+                        <p><strong>Tipo:</strong> Pirimidina</p>
+                        <p><strong>Pareamento:</strong> A (RNA)</p>
+                    `;
+                    break;
+            }
+            
+            infoPanel.innerHTML = info;
+            infoPanel.style.display = 'block';
+        }
+        
+        // Funções para o Quiz
+        let correctAnswers = 0;
+        let totalQuestions = 3;
+        let questionsAnswered = 0;
+        
+        function checkAnswer(element, status) {
+            // Remover estilos de todas as opções da mesma pergunta
+            const options = element.parentElement.children;
+            for (let i = 0; i < options.length; i++) {
+                options[i].classList.remove('correct', 'incorrect');
+            }
+            
+            // Aplicar estilo à opção selecionada
+            element.classList.add(status);
+            
+            // Atualizar contador de respostas corretas
+            if (status === 'correct') {
+                correctAnswers++;
+            }
+            
+            // Atualizar progresso
+            questionsAnswered++;
+            updateQuizProgress();
+            
+            // Desabilitar todas as opções da pergunta após responder
+            for (let i = 0; i < options.length; i++) {
+                options[i].style.pointerEvents = 'none';
+            }
+            
+            // Mostrar resultado se todas as perguntas foram respondidas
+            if (questionsAnswered === totalQuestions) {
+                showQuizResult();
+            }
+        }
+        
+        function updateQuizProgress() {
+            const progress = (questionsAnswered / totalQuestions) * 100;
+            document.getElementById('quiz-progress').style.width = `${progress}%`;
+        }
+        
+        function showQuizResult() {
+            const resultElement = document.getElementById('quiz-result');
+            const resetBtn = document.getElementById('reset-btn');
+            const percentage = (correctAnswers / totalQuestions) * 100;
+            
+            let message = '';
+            if (percentage === 100) {
+                message = `🎉 Parabéns! Você acertou todas as ${totalQuestions} perguntas! Excelente conhecimento em biologia!`;
+                resultElement.style.backgroundColor = '#e8f5e9';
+                resultElement.style.color = '#2e7d32';
+            } else if (percentage >= 70) {
+                message = `👍 Muito bom! Você acertou ${correctAnswers} de ${totalQuestions} perguntas. Continue assim!`;
+                resultElement.style.backgroundColor = '#e3f2fd';
+                resultElement.style.color = '#1565c0';
+            } else {
+                message = `📚 Você acertou ${correctAnswers} de ${totalQuestions} perguntas. Continue estudando para melhorar seu conhecimento!`;
+                resultElement.style.backgroundColor = '#ffebee';
+                resultElement.style.color = '#c62828';
+            }
+            
+            resultElement.textContent = message;
+            resultElement.style.display = 'block';
+            resetBtn.style.display = 'inline-flex';
+        }
+        
+        function resetQuiz() {
+            // Resetar contadores
+            correctAnswers = 0;
+            questionsAnswered = 0;
+            
+            // Remover estilos e reativar opções
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+                option.style.pointerEvents = 'auto';
+            });
+            
+            // Limpar resultado e progresso
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-progress').style.width = '0%';
+            document.getElementById('reset-btn').style.display = 'none';
+        }
+        
+        // Observador de interseção para animar seções quando visíveis
+        const observerOptions = {
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Observar seções para animação
+            document.querySelectorAll('section').forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Inicializar elementos flutuantes
+            initFloatingElements();
+            
+            // Gerar DNA inicial
+            generateDNA();
+            
+            // Atualizar navegação ativa
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
