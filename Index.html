@@ -18,6 +18,20 @@
             --white: #ffffff;
             --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
+            --border-radius: 12px;
+        }
+        
+        .dark-mode {
+            --primary: #4caf50;
+            --primary-light: #80e27e;
+            --primary-dark: #087f23;
+            --secondary: #ff9800;
+            --accent: #42a5f5;
+            --text: #f5f5f5;
+            --text-light: #bdbdbd;
+            --background: #121212;
+            --white: #1e1e1e;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         
         * {
@@ -32,6 +46,7 @@
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
+            transition: var(--transition);
         }
         
         header {
@@ -42,6 +57,11 @@
             box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
         
         .floating-cells {
@@ -73,6 +93,9 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         nav ul {
@@ -102,6 +125,26 @@
             transform: translateY(-2px);
         }
         
+        .nav-controls {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .theme-toggle, .progress-toggle {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover, .progress-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -110,7 +153,7 @@
         
         section {
             background-color: var(--white);
-            border-radius: 12px;
+            border-radius: var(--border-radius);
             padding: 2rem;
             margin-bottom: 2rem;
             box-shadow: var(--shadow);
@@ -152,8 +195,8 @@
         }
         
         .interactive-area {
-            background-color: #f9f9f9;
-            border: 1px solid #e0e0e0;
+            background-color: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 8px;
             padding: 1.5rem;
             margin: 1.5rem 0;
@@ -252,7 +295,7 @@
         }
         
         .info-panel {
-            background-color: white;
+            background-color: var(--white);
             border-radius: 8px;
             padding: 1.5rem;
             margin-top: 1.5rem;
@@ -307,7 +350,7 @@
         .u { background-color: #9c27b0; }
         
         .quiz-container {
-            background-color: #f9f9f9;
+            background-color: rgba(0, 0, 0, 0.03);
             border-radius: 8px;
             padding: 1.5rem;
         }
@@ -315,7 +358,7 @@
         .question {
             margin-bottom: 1.5rem;
             padding: 1rem;
-            background: white;
+            background: var(--white);
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
@@ -335,8 +378,8 @@
         
         .option {
             padding: 1rem;
-            background-color: white;
-            border: 2px solid #e0e0e0;
+            background-color: var(--white);
+            border: 2px solid rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             cursor: pointer;
             transition: var(--transition);
@@ -351,12 +394,12 @@
         }
         
         .option.correct {
-            background-color: #e8f5e9;
+            background-color: rgba(76, 175, 80, 0.1);
             border-color: #4caf50;
         }
         
         .option.incorrect {
-            background-color: #ffebee;
+            background-color: rgba(244, 67, 54, 0.1);
             border-color: #f44336;
         }
         
@@ -400,7 +443,7 @@
         
         .progress-bar {
             height: 10px;
-            background-color: #e0e0e0;
+            background-color: rgba(0, 0, 0, 0.1);
             border-radius: 5px;
             margin: 1rem 0;
             overflow: hidden;
@@ -503,7 +546,7 @@
         
         .tabs {
             display: flex;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
         }
         
@@ -539,9 +582,41 @@
         .search-box input {
             flex: 1;
             padding: 0.75rem;
-            border: 1px solid #e0e0e0;
+            border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 4px;
             font-size: 1rem;
+            background-color: var(--white);
+            color: var(--text);
+        }
+        
+        .user-progress {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: var(--white);
+            padding: 1rem;
+            border-radius: 8px 0 0 8px;
+            box-shadow: var(--shadow);
+            z-index: 90;
+            display: none;
+        }
+        
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .progress-item.completed i {
+            color: #4caf50;
+        }
+        
+        .progress-item.active {
+            font-weight: bold;
+            color: var(--primary);
         }
         
         @media (max-width: 768px) {
@@ -561,14 +636,44 @@
             nav li {
                 margin: 0.25rem 0;
             }
+            
+            .nav-controls {
+                margin-top: 1rem;
+            }
+            
+            .user-progress {
+                display: none !important;
+            }
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .completion-badge {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: none;
+        }
+        
+        .completion-badge.completed {
+            display: inline-block;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="floating-cells" id="floating-cells"></div>
-        <h1><i class="fas fa-microscope"></i> BioExplorer</h1>
-        <p>Descubra os segredos da vida através da interatividade</p>
+        <div class="header-content">
+            <h1><i class="fas fa-microscope"></i> BioExplorer</h1>
+            <p>Descubra os segredos da vida através da interatividade</p>
+        </div>
     </header>
     
     <nav>
@@ -579,11 +684,46 @@
             <li><a href="#dna"><i class="fas fa-dna"></i> DNA e Genética</a></li>
             <li><a href="#quiz"><i class="fas fa-question-circle"></i> Quiz</a></li>
         </ul>
+        <div class="nav-controls">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Alternar modo escuro">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="progress-toggle" id="progress-toggle" aria-label="Mostrar progresso">
+                <i class="fas fa-chart-line"></i>
+            </button>
+        </div>
     </nav>
+    
+    <div class="user-progress" id="user-progress">
+        <h3>Seu Progresso</h3>
+        <div class="progress-item" data-section="introducao">
+            <i class="far fa-circle"></i>
+            <span>Introdução</span>
+        </div>
+        <div class="progress-item" data-section="celula">
+            <i class="far fa-circle"></i>
+            <span>Célula Animal</span>
+        </div>
+        <div class="progress-item" data-section="digestivo">
+            <i class="far fa-circle"></i>
+            <span>Sistema Digestório</span>
+        </div>
+        <div class="progress-item" data-section="dna">
+            <i class="far fa-circle"></i>
+            <span>DNA e Genética</span>
+        </div>
+        <div class="progress-item" data-section="quiz">
+            <i class="far fa-circle"></i>
+            <span>Quiz</span>
+        </div>
+    </div>
     
     <div class="container">
         <section id="introducao" class="visible">
-            <h2><i class="fas fa-seedling"></i> Introdução à Biologia</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-seedling"></i> Introdução à Biologia</h2>
+                <span class="completion-badge" id="badge-introducao">Concluído</span>
+            </div>
             <p>A Biologia é a ciência que estuda a vida e os organismos vivos, incluindo sua estrutura, função, crescimento, origem, evolução e distribuição. É uma área fascinante que nos ajuda a compreender desde as menores partículas que compõem os seres vivos até os complexos ecossistemas do nosso planeta.</p>
             
             <div class="interactive-area">
@@ -652,7 +792,10 @@
         </section>
         
         <section id="celula">
-            <h2><i class="fas fa-border-all"></i> Célula Animal Interativa</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-border-all"></i> Célula Animal Interativa</h2>
+                <span class="completion-badge" id="badge-celula">Concluído</span>
+            </div>
             <p>A célula animal é a unidade básica da vida nos animais. É uma célula eucariótica, o que significa que possui um núcleo verdadeiro e organelas membranosas. Explore as diferentes partes da célula clicando nos ícones:</p>
             
             <div class="interactive-area">
@@ -683,7 +826,10 @@
         </section>
         
         <section id="digestivo">
-            <h2><i class="fas fa-utensils"></i> Sistema Digestório</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-utensils"></i> Sistema Digestório</h2>
+                <span class="completion-badge" id="badge-digestivo">Concluído</span>
+            </div>
             <p>O sistema digestório é responsável por processar os alimentos que ingerimos, extraindo nutrientes e eliminando resíduos. Clique em cada ícone para aprender sobre sua função no processo digestivo:</p>
             
             <div class="interactive-area">
@@ -732,7 +878,10 @@
         </section>
         
         <section id="dna">
-            <h2><i class="fas fa-dna"></i> DNA e Genética</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-dna"></i> DNA e Genética</h2>
+                <span class="completion-badge" id="badge-dna">Concluído</span>
+            </div>
             <p>O DNA (ácido desoxirribonucleico) é a molécula que carrega a informação genética em todos os seres vivos. É composto por quatro bases nitrogenadas: Adenina (A), Timina (T), Citosina (C) e Guanina (G).</p>
             
             <div class="interactive-area">
@@ -782,7 +931,10 @@
         </section>
         
         <section id="quiz">
-            <h2><i class="fas fa-brain"></i> Quiz de Biologia</h2>
+            <div class="section-header">
+                <h2><i class="fas fa-brain"></i> Quiz de Biologia</h2>
+                <span class="completion-badge" id="badge-quiz">Concluído</span>
+            </div>
             <p>Teste seus conhecimentos em biologia respondendo às perguntas abaixo:</p>
             
             <div class="interactive-area quiz-container">
@@ -951,6 +1103,9 @@
             
             infoPanel.innerHTML = info;
             infoPanel.style.display = 'block';
+            
+            // Marcar como interagido
+            markSectionAsCompleted('introducao');
         }
         
         function searchKingdom() {
@@ -1029,6 +1184,9 @@
             
             infoPanel.innerHTML = info;
             infoPanel.style.display = 'block';
+            
+            // Marcar como interagido
+            markSectionAsCompleted('celula');
         }
         
         // Funções para a seção do Sistema Digestório
@@ -1081,6 +1239,9 @@
             
             infoPanel.innerHTML = info;
             infoPanel.style.display = 'block';
+            
+            // Marcar como interagido
+            markSectionAsCompleted('digestivo');
         }
         
         function startDigestion() {
@@ -1096,6 +1257,9 @@
                 foodParticle.style.left = 'calc(100% - 50px)';
                 progressBar.style.width = '100%';
             }, 100);
+            
+            // Marcar como interagido
+            markSectionAsCompleted('digestivo');
         }
         
         // Funções para a seção de DNA
@@ -1112,6 +1276,9 @@
                 nucleotide.onclick = function() { showBaseInfo(randomBase === 'A' ? 'Adenina' : randomBase === 'T' ? 'Timina' : randomBase === 'C' ? 'Citosina' : 'Guanina'); };
                 dnaStrand.appendChild(nucleotide);
             }
+            
+            // Marcar como interagido
+            markSectionAsCompleted('dna');
         }
         
         function transcribeDNA() {
@@ -1139,6 +1306,9 @@
                 nucleotide.onclick = function() { showBaseInfo(rnaBase === 'A' ? 'Adenina' : rnaBase === 'U' ? 'Uracila' : rnaBase === 'C' ? 'Citosina' : 'Guanina'); };
                 rnaStrand.appendChild(nucleotide);
             }
+            
+            // Marcar como interagido
+            markSectionAsCompleted('dna');
         }
         
         function showBaseInfo(base) {
@@ -1190,6 +1360,9 @@
             
             infoPanel.innerHTML = info;
             infoPanel.style.display = 'block';
+            
+            // Marcar como interagido
+            markSectionAsCompleted('dna');
         }
         
         // Funções para o Quiz
@@ -1224,6 +1397,7 @@
             // Mostrar resultado se todas as perguntas foram respondidas
             if (questionsAnswered === totalQuestions) {
                 showQuizResult();
+                markSectionAsCompleted('quiz');
             }
         }
         
@@ -1240,15 +1414,15 @@
             let message = '';
             if (percentage === 100) {
                 message = `🎉 Parabéns! Você acertou todas as ${totalQuestions} perguntas! Excelente conhecimento em biologia!`;
-                resultElement.style.backgroundColor = '#e8f5e9';
+                resultElement.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
                 resultElement.style.color = '#2e7d32';
             } else if (percentage >= 70) {
                 message = `👍 Muito bom! Você acertou ${correctAnswers} de ${totalQuestions} perguntas. Continue assim!`;
-                resultElement.style.backgroundColor = '#e3f2fd';
+                resultElement.style.backgroundColor = 'rgba(33, 150, 243, 0.1)';
                 resultElement.style.color = '#1565c0';
             } else {
                 message = `📚 Você acertou ${correctAnswers} de ${totalQuestions} perguntas. Continue estudando para melhorar seu conhecimento!`;
-                resultElement.style.backgroundColor = '#ffebee';
+                resultElement.style.backgroundColor = 'rgba(244, 67, 54, 0.1)';
                 resultElement.style.color = '#c62828';
             }
             
@@ -1275,6 +1449,73 @@
             document.getElementById('reset-btn').style.display = 'none';
         }
         
+        // Sistema de progresso do usuário
+        function markSectionAsCompleted(sectionId) {
+            // Atualizar badge
+            const badge = document.getElementById(`badge-${sectionId}`);
+            badge.classList.add('completed');
+            
+            // Atualizar progresso lateral
+            const progressItem = document.querySelector(`.progress-item[data-section="${sectionId}"]`);
+            if (progressItem) {
+                progressItem.classList.add('completed');
+                const icon = progressItem.querySelector('i');
+                icon.className = 'fas fa-check-circle';
+            }
+            
+            // Salvar no localStorage
+            const progress = JSON.parse(localStorage.getItem('bioexplorer-progress') || '{}');
+            progress[sectionId] = true;
+            localStorage.setItem('bioexplorer-progress', JSON.stringify(progress));
+        }
+        
+        function loadProgress() {
+            const progress = JSON.parse(localStorage.getItem('bioexplorer-progress') || '{}');
+            
+            // Atualizar badges
+            Object.keys(progress).forEach(sectionId => {
+                const badge = document.getElementById(`badge-${sectionId}`);
+                if (badge) {
+                    badge.classList.add('completed');
+                }
+                
+                // Atualizar progresso lateral
+                const progressItem = document.querySelector(`.progress-item[data-section="${sectionId}"]`);
+                if (progressItem) {
+                    progressItem.classList.add('completed');
+                    const icon = progressItem.querySelector('i');
+                    icon.className = 'fas fa-check-circle';
+                }
+            });
+        }
+        
+        // Modo escuro
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('bioexplorer-darkmode', isDarkMode);
+            
+            const themeToggle = document.getElementById('theme-toggle');
+            const icon = themeToggle.querySelector('i');
+            icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        function loadDarkMode() {
+            const isDarkMode = localStorage.getItem('bioexplorer-darkmode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                const themeToggle = document.getElementById('theme-toggle');
+                const icon = themeToggle.querySelector('i');
+                icon.className = 'fas fa-sun';
+            }
+        }
+        
+        // Toggle do painel de progresso
+        function toggleProgressPanel() {
+            const progressPanel = document.getElementById('user-progress');
+            progressPanel.style.display = progressPanel.style.display === 'block' ? 'none' : 'block';
+        }
+        
         // Observador de interseção para animar seções quando visíveis
         const observerOptions = {
             threshold: 0.1
@@ -1284,6 +1525,16 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
+                    
+                    // Atualizar progresso lateral
+                    const sectionId = entry.target.id;
+                    const progressItems = document.querySelectorAll('.progress-item');
+                    progressItems.forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('data-section') === sectionId) {
+                            item.classList.add('active');
+                        }
+                    });
                 }
             });
         }, observerOptions);
@@ -1307,6 +1558,25 @@
                 link.addEventListener('click', function() {
                     navLinks.forEach(l => l.classList.remove('active'));
                     this.classList.add('active');
+                });
+            });
+            
+            // Carregar progresso salvo
+            loadProgress();
+            
+            // Configurar modo escuro
+            loadDarkMode();
+            document.getElementById('theme-toggle').addEventListener('click', toggleDarkMode);
+            
+            // Configurar toggle do painel de progresso
+            document.getElementById('progress-toggle').addEventListener('click', toggleProgressPanel);
+            
+            // Configurar navegação pelo painel de progresso
+            const progressItems = document.querySelectorAll('.progress-item');
+            progressItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
                 });
             });
         });
